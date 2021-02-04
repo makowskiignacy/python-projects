@@ -1,0 +1,53 @@
+import numpy as np
+def minimum(x, y, z):
+    if x < y:
+        if x < z:
+            return x
+        else:
+            return z
+    else:
+        if y < z:
+            return y
+        else:
+            return z
+    pass
+
+def jaka_kara(kary, x, y, x_max, y_max, a, b, kara_przerwa, kara_litera):
+    if kary[x][y] != -1:
+        return kary[x][y]
+    else:
+        ox = jaka_kara(kary, x + 1, y, x_max, y_max, a, b, kara_przerwa, kara_litera) + kara_przerwa
+        oy = jaka_kara(kary, x, y + 1, x_max, y_max, a, b, kara_przerwa, kara_litera) + kara_przerwa
+        if a[x] == b[y]:
+            oxy = jaka_kara(kary, x + 1, y + 1, x_max, y_max, a, b, kara_przerwa, kara_litera)
+        else:
+            oxy = jaka_kara(kary, x + 1, y + 1, x_max, y_max, a, b, kara_przerwa, kara_litera) + kara_litera
+    kary[x][y] = minimum(ox, oy, oxy);
+    return kary[x][y]
+    pass
+
+def levenshtein(a, b, kara_przerwa, kara_litera):
+    m = len(a)
+    n = len(b);
+    kary = np.empty((m, n))
+    for i in range(m):
+        for j in range(n):
+            kary[i][j] = -1
+            pass
+        pass
+    for i in range(m):
+        kary[i][n - 1] = (m - 1 - i) * kara_przerwa
+        pass
+    for j in range(n):
+        kary[m - 1][j] = (n - 1 - j) * kara_przerwa
+        pass
+    return jaka_kara(kary, 0, 0, m, n, a, b, kara_przerwa, kara_litera)
+    pass
+
+a = "AGATCTGTTCTCTAAACGAACTTTAAAATCTGTGTGGCTGTCACTCGGCTGCATGCTTAGTGCACTCACGCAGTATAATTAATAACTAATTACTGTCGTTGAGTTTGCCTGTTTTACAGGTTCGCGACGTGCTCGTACGTGGCTTTGGAGA"
+b = "TTTCAACGAGAAAACACACGTCCAACTCAGTCTCGGCTGCATGCTTAGCTCGGCTGCATGCTTAGTTGCCTGTTTTACAGGTTCGCGACGTGCTCGTACGTGGCTTTGGAGACTCCGTGGAGGAGGTCTTATCAGAGCTCGGCTGCATGCTTAGGCACGT"
+c = "AGATCTGTTCTCTAAACGAACTTTAAAATCTGTGTGGCTGTCACTCGGCTGCATGCTTAGTGCACTCACGCAGTATAATTAATAACTAATTACTGTCGTTGAGTTTGCCTGTTTTACAGGTTCGCGACGTGCTCGTACGTGGCTTTGGAGA"
+covid19_first = "AGATCTGTTCTCTAAACGAACTTTAAAATCTGTGTGGCTGTCACTCGGCTGCATGCTTAGTGCACTCACGCAGTATAATTAATAACTAATTACTGTCGTTGACAGGACACGAGTAACTCGTCTATCTTCTGCAGGCTGCTTACGGTTTCGTCCGTGTTGCAGCCGATCATCAGCACATCTAGGTTTCGTCCGGGTGTGACCGAAAGGTAAGATGGAGAGCCTTGTCCCTGGTTTCAACGAGAAAACACACGTCCAACTCAGTTTGCCTGTTTTACAGGTTCGCGACGTGCTCGTACGTGGCTTTGGAGACTCCGTGGAGGAGGTCTTATCAGAGGCACGTCAACATCTTAAAGATGGCACTTGTGGCTTAGTAGAAGTTGAAAAAGGCGTTTTGCCTCAACTTGAACAGCCCTATGTGTTCATCAAACGTTCGGATGCTCGAACTGCACCTCATGGTCATGTTATGGTTGAGCTGGTAGCAGAACTCGAAGGCATTCA"
+covid19_second = "GCCATAGTTACGGCGCCGATCTAAAGTCATTTGACTTAGGCGACGAGCTTGGCACTGATCCTTATGAAGATTTTCAAGAAAACTGGAACACTAAACATAGCAGTGGTGTTACCCGTGAACTCATGCGTGAGCTTAACGGAGGGGCATACACTCGCTATGTCGATAACAACTTCTGTGGCCCTGATGGCTACCCTCTTGAGTGCATTAAAGACCTTCTAGCACGTGCTGGTAAAGCTTCATGCACTTTGTCCGAACAACTGGACTTTATTGACACTAAGAGGGGTGTATACTGCTGCCGTGAACATGAGCATGAAATTGCTTGGTACACGGAACGTTCTGAAAAGAGCTATGAATTGCAGACACCTTTTGAAATTAAATTGGCAAAGAAATTTGACACCTTCAATGGGGAATGTCCAAATTTTGTATTTCCCTTAAATTCTATAATCAAGACTATTCAACCAAGGGTTGAAAAGAAAAAGCTTGATGGCTTTATGGGTA"
+print(levenshtein(covid19_first, covid19_second, 0.01, 0.03))
+print(levenshtein(covid19_first, covid19_first, 0.01, 0.03))
